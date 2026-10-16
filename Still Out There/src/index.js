@@ -1,113 +1,91 @@
 import './style.css'
-import catalogue from './data/catalogue-exemple.json';
 
 
 
+const API = 'https://api.xposedornot.com/v1'
 
+let catalogue = null
 
+async function chargerCatalogue() {
+  if (catalogue !== null) return catalogue
 
-const formulaire = document.querySelector('#formulaire-recherche');
+  const reponse = await fetch(API + '/breaches')
+  if (!reponse.ok) throw new Error('CHARGER_CATALOGUE')
 
-formulaire.addEventListener('submit', function (evenement) {
-  evenement.preventDefault();
-  const champ = document.querySelector('#champ-adresse');
-  const submit = document.querySelector('#zone-resultat');
+  const donnees = await reponse.json()
+  catalogue = donnees.exposedBreaches
+  //console.log(catalogue[0])   // test, parce que j'avais un bug et je voulais l'identifier 
 
+  return catalogue
+}
 
+function trouverDansCatalogue(liste, nom) {
+  for (const fuite of liste) {
+    if (fuite.breachID === nom) return fuite
+  }
+  throw new Error('TROUVER_CATLOGUE');
+  return null
+}
 
-
-
-    const reponse = fetch('./data/catalogue-exemple.json');
-    const catalogue = reponse.json();
-
-
-    submit.textContent = catalogue
-
-
-});
-
-
-
-
-
-
-async function initialiser(mail) {
+async function rechercher(mail) {
   try {
-    const carte = creerCarte('carte')
+    const liste = await chargerCatalogue()
 
-      const [infos, etats] = await Promise.all([
-      fetch('/api.xposedornot.com/v1/breaches').then(r => r.json()),
-      fetch('https://api.xposedornot.com/v1/check-email/n' + mail).then(r => r.json())      // il faut continuer la 
-    ])
-    const etatsParId = new Map(
-      etats.data.stations.map(s => [s.station_id, s])
-    )
+    const reponse = await fetch(API + '/check-email/' + encodeURIComponent(mail))   //encodeURIComponent transforme le texte en url
 
-    const stations = []                                                                         //a tous changer pour traiter les données 
+    // gestion des erreures 
+    if (!reponse.ok) {
+      return { etat: 'erreur' }
+    }
 
-    for (const station of infos.data.stations) {
-      const etat = etatsParId.get(station.station_id)
+    const donnees = await reponse.json()
+    const noms = donnees.breaches[0]    // breaches[0] car il y a qu'une seule ligne 
+    
 
-      stations.push({
-        id: station.station_id,
-        nom: station.name,
-        lat: station.lat,
-        lon: station.lon,
-        capacite: station.capacity,
-        velos: etat?.numBikesAvailable ?? 0,
-        bornes: etat?.numDocksAvailable ?? 0
+    const fuites = []
+
+    for (const nom of noms) {
+      const brute = trouverDansCatalogue(liste, nom)
+      if (brute === null) continue
+
+      console.log(brute)
+      let texte = brute.xposedData
+
+      if (texte === undefined || texte === null) {
+      texte = ''
+      }
+
+      const types = texte.split(';')
+
+      fuites.push({
+        nom: brute.breachID,
+        logo: brute.logo,
+        date: brute.breachedDate,
+        secteur: brute.industry,
+        comptes: brute.xposedRecords,
+        types: types,
+        description: brute.xposureDesc,
+        motDePasseExpose: types.includes('Passwords')
       })
     }
 
-
-    stations.forEach((station) => {
-      L.marker([station.lat, station.lon])
-        .addTo(carte)
-        .bindPopup(`<b>${station.nom}</b> <br> il reste ${station.velos} / ${station.capacite} places`)
-    })
+    return fuites
   } catch (erreur) {
-  console.error('Échec du chargement', erreur)
-} finally {
-  setTimeout(initialiser, DELAI)
+    console.error(erreur)
+    return 0
+  }
 }
+
+function afficherFuites(fuites) {
+  return fuites.map((fuite) => `
+      <details>
+        <summary>${fuite.nom}</summary>
+        <p>${fuite.secteur} · ${fuite.date}</p>
+        <p>${fuite.comptes} comptes touchés</p>
+        <p>${fuite.types.join(', ')}</p>
+        <p>${fuite.description}</p>
+      </details>
+    `)
+    .join('')
 }
 
-initialiser()
-
-
-
-
-
-
-
-
-const [infos, etats] = await Promise.all([
-      fetch('api.xposedornot.com/v1/breaches').then(r => r.json()),
-      fetch('/api/opendata/Velib_Metropole/station_status.json').then(r => r.json())
-    ])
-    const etatsParId = new Map(
-      etats.data.stations.map(s => [s.station_id, s])
-    )
-
-    const stations = []
-
-    for (const station of infos.data.stations) {
-      const etat = etatsParId.get(station.station_id)
-
-      stations.push({
-        id: station.station_id,
-        nom: station.name,
-        lat: station.lat,
-        lon: station.lon,
-        capacite: station.capacity,
-        velos: etat?.numBikesAvailable ?? 0,
-        bornes: etat?.numDocksAvailable ?? 0
-      })
-    }
-
-
-    stations.forEach((station) => {
-      L.marker([station.lat, station.lon])
-        .addTo(carte)
-        .bindPopup(`<b>${station.nom}</b> <br> il reste ${station.velos} / ${station.capacite} places`)
-    })
