@@ -23,7 +23,6 @@ function trouverDansCatalogue(liste, nom) {
   for (const fuite of liste) {
     if (fuite.breachID === nom) return fuite
   }
-  throw new Error('TROUVER_CATLOGUE');
   return null
 }
 
@@ -62,17 +61,17 @@ async function rechercher(mail) {
         logo: brute.logo,
         date: brute.breachedDate,
         secteur: brute.industry,
-        comptes: brute.xposedRecords,
+        comptes: brute.exposedRecords,
         types: types,
-        description: brute.xposureDesc,
-        motDePasseExpose: types.includes('Passwords')
+        description: brute.exposureDescription,
+        data: brute.exposedData,
       })
     }
 
-    return fuites
+    return { etat: 'resultats', fuites: fuites }
   } catch (erreur) {
     console.error(erreur)
-    return 0
+    return { etat: 'erreur' }
   }
 }
 
@@ -83,9 +82,39 @@ function afficherFuites(fuites) {
         <p>${fuite.secteur} · ${fuite.date}</p>
         <p>${fuite.comptes} comptes touchés</p>
         <p>${fuite.types.join(', ')}</p>
+        <p> données touchés :  ${fuite.data.join(', ')}</p>
         <p>${fuite.description}</p>
       </details>
     `)
     .join('')
 }
+
+function main() {
+
+  const formulaire = document.querySelector('#formulaire')
+  const champMail = document.querySelector('#mail')
+  const resultats = document.querySelector('#resultats')
+
+  chargerCatalogue().catch(() => {})
+
+  formulaire.addEventListener('submit', async (evenement) => {
+    evenement.preventDefault()
+
+    const mail = champMail.value.trim()
+
+    resultats.textContent = 'Recherche en cours…'
+
+    const resultat = await rechercher(mail)
+
+    if (resultat.etat === 'resultats') {
+      resultats.innerHTML = resultat.fuites.length + ' fuites trouvées' + afficherFuites(resultat.fuites)
+    } else if (resultat.etat === 'vide') {
+      resultats.textContent = 'Aucune fuite'
+    } else {
+      resultats.textContent = 'Erreur'  
+    }
+  })
+}
+
+main()
 
