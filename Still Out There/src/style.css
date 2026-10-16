@@ -1,1 +1,237 @@
 
+/* ------------------------------------------------------------------
+   still out there — feuille de style
+   Theme sombre, une seule couleur d'accent, hierarchie par l'opacite.
+   ------------------------------------------------------------------ */
+
+:root {
+  --fond: #0A0A0B;
+  --surface: rgba(255, 255, 255, 0.05);
+  --texte: #F5F5F7;
+  --texte-doux: rgba(255, 255, 255, 0.5);
+  --texte-faible: rgba(255, 255, 255, 0.3);
+  --trait: rgba(255, 255, 255, 0.08);
+  --trait-fort: rgba(255, 255, 255, 0.14);
+  --alerte: #FF6961;
+
+  --rayon: 10px;
+}
+
+/* Remise a zero minimale */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0 24px 120px;
+  background: var(--fond);
+  color: var(--texte);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Colonne centrale : tout le contenu est centre et limite en largeur.
+   Le > selectionne uniquement les enfants directs de body. */
+
+body > * {
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ------------------------------------------------------------------
+   Titre
+   ------------------------------------------------------------------ */
+
+h1 {
+  margin: 96px 0 40px;
+  font-size: 44px;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+
+/* ------------------------------------------------------------------
+   Formulaire
+   ------------------------------------------------------------------ */
+
+#formulaire {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 56px;
+}
+
+#mail {
+  flex: 1;
+  min-width: 0;            /* evite que l'input deborde du flex */
+  height: 48px;
+  padding: 0 16px;
+  background: var(--surface);
+  border: 1px solid var(--trait-fort);
+  border-radius: var(--rayon);
+  color: var(--texte);
+  font-size: 16px;         /* 16px minimum, sinon l'iPhone zoome au focus */
+  font-family: inherit;
+}
+
+#mail::placeholder {
+  color: var(--texte-faible);
+}
+
+#mail:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Le champ devient rouge seulement si l'utilisateur a tape quelque chose
+   d'invalide. :placeholder-shown evite de l'allumer quand il est vide. */
+
+#mail:invalid:not(:placeholder-shown):not(:focus) {
+  border-color: rgba(255, 69, 58, 0.5);
+}
+
+#formulaire button {
+  height: 48px;
+  padding: 0 24px;
+  background: var(--texte);
+  border: none;
+  border-radius: var(--rayon);
+  color: var(--fond);
+  font-size: 15px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+#formulaire button:hover {
+  background: #FFFFFF;
+}
+
+#formulaire button:active {
+  transform: translateY(1px);
+}
+
+/* ------------------------------------------------------------------
+   Zone de resultats
+   ------------------------------------------------------------------ */
+
+/* Quand la section ne contient que du texte (messages "Recherche en
+   cours", "Aucune fuite", "Erreur"), on l'affiche en gros et centre. */
+
+#resultats {
+  font-size: 15px;
+  color: var(--texte-doux);
+}
+
+/* ------------------------------------------------------------------
+   Une fuite = un <details>
+   ------------------------------------------------------------------ */
+
+details {
+  border-top: 1px solid var(--trait);
+  padding: 20px 0;
+}
+
+details:last-of-type {
+  border-bottom: 1px solid var(--trait);
+}
+
+summary {
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--texte);
+  cursor: pointer;
+  list-style: none;        /* enleve le triangle par defaut */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Le triangle natif de Safari/Chrome se cache a part */
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* On dessine notre propre chevron, pivote quand le bloc est ouvert */
+summary::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  margin-left: auto;
+  border-right: 1.5px solid var(--texte-faible);
+  border-bottom: 1.5px solid var(--texte-faible);
+  transform: rotate(45deg);
+  transition: transform 0.15s ease;
+}
+
+details[open] summary::after {
+  transform: rotate(-135deg);
+}
+
+summary:focus-visible {
+  outline: 2px solid var(--trait-fort);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* Les paragraphes a l'interieur d'un details */
+
+details p {
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: var(--texte-doux);
+}
+
+/* Le premier paragraphe apres le summary = secteur et date, en retrait */
+details p:first-of-type {
+  margin-top: 14px;
+  color: var(--texte-faible);
+  font-size: 13px;
+}
+
+/* Le dernier = la description de l'incident, un peu plus aere */
+details p:last-of-type {
+  margin-top: 14px;
+  line-height: 1.65;
+}
+
+/* ------------------------------------------------------------------
+   Telephone
+   ------------------------------------------------------------------ */
+
+@media (max-width: 560px) {
+
+  body {
+    padding: 0 18px 80px;
+  }
+
+  h1 {
+    margin: 56px 0 28px;
+    font-size: 32px;
+  }
+
+  /* Le bouton passe sous le champ plutot que de l'ecraser */
+  #formulaire {
+    flex-direction: column;
+    margin-bottom: 40px;
+  }
+
+  #formulaire button {
+    width: 100%;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Accessibilite : respecte le reglage systeme "moins d'animations"
+   ------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none;
+  }
+}

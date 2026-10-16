@@ -29,14 +29,16 @@ async function chargerCatalogue() {
   const reponse = await fetch(API + '/breaches')
   if (!reponse.ok) throw new Error('CHARGER_CATALOGUE')
 
-  const donnees = await reponse.json()
+  
+  const json = await reponse.json()
+  const donnees = json.exposedBreaches
+
 
   const paquet = { date: Date.now(), donnees: donnees } //création de l'objet
   localStorage.setItem(CLE, JSON.stringify(paquet))   //stringify pour mettre au format texte pour le fichier json
 
   return paquet.donnees
-}                             /////////////////il y a un pb il faut que je renvoir un tableau la prochaine fois -----------------------------
-
+}
 
 function trouverDansCatalogue(liste, nom) {
   for (const fuite of liste) {
@@ -136,4 +138,7 @@ function main() {
 }
 
 main()
+
+
+
 
