@@ -1,4 +1,5 @@
 import './style.css'
+import { Trie } from './trie.js'
 
 
 
@@ -139,6 +140,12 @@ function main() {
 
 main()
 
-
+const trie = new Trie()
+const bouton = document.createElement('button')
+bouton.textContent = 'Trier'
+bouton.addEventListener('click', () => {
+  bouton.textContent = `Clics : ${compteur.incrementer()}`
+})
+document.body.append(bouton)
 
 
