@@ -70,21 +70,20 @@ async function rechercher(mail) {
       if (brute === null) continue
 
       console.log(brute)
-      let texte = brute.xposedData
+      let texte = brute.exposedData
 
       if (texte === undefined || texte === null) {
       texte = ''
       }
 
-      const types = texte.split(';')
 
       fuites.push({
         nom: brute.breachID,
         logo: brute.logo,
-        date: brute.breachedDate,
+        date: new Date(brute.breachedDate),   // dans lapi la date est en format ISO 8601, alors on on crée un obket Date avec et puis plus tard on lui demande de le formater en fr
         secteur: brute.industry,
         comptes: brute.exposedRecords,
-        types: types,
+        types: texte,
         description: brute.exposureDescription,
         data: brute.exposedData,
       })
@@ -98,16 +97,16 @@ async function rechercher(mail) {
 }
 
 function afficherFuites(fuites) {
+
   return fuites.map((fuite) => `
       <details>
         <summary>${fuite.nom}</summary>
-        <p>${fuite.secteur} · ${fuite.date}</p>
+        <p>${fuite.secteur} · ${fuite.date.toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' })}</p> 
         <p>${fuite.comptes} comptes touchés</p>
-        <p>${fuite.types.join(', ')}</p>
         <p> données touchés :  ${fuite.data.join(', ')}</p>
         <p>${fuite.description}</p>
       </details>
-    `)
+    `)      // c'est a fuite.date qu'on le formate en francais avce l'année et le mois 
     .join('')
 }
 
