@@ -16,7 +16,7 @@ async function chargerCatalogue() {
                                               // j'urais aussi pu passer par sessionStorage, ma m'ourais peris que ca se n'étoie tous suel a la fermeture de l'onglet mais je préfère garder local car 
                                               // comme ca si on ferme le naviguateur on n'as pas de demande suplémentaire ni si on ouvre un autre onglet 
   if (stocke !== null) {                       // car localStorage.getItem(CLE)  renvoie null si rien n'as jamais été socké (comme le premier chargement)
-    const paquet = JSON.parse(stocke)
+    const paquet = JSON.parse(stocke)         // plus d'info dans le readme
     const age = Date.now() - paquet.date
 
     if (age < DUREE_CACHE) {
