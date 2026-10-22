@@ -4,7 +4,7 @@ const API = 'https://api.xposedornot.com/v1'
 const DUREE_CACHE = 30 * 60 * 1000   // 30 minutes en millisecondes
 const CLE = 'catalogue'
 
-export class ClientXposed {
+export class ClientExposed {
  async chargerCatalogue() {
   const stocke = localStorage.getItem(CLE)    // je voulais faire un setinterval de base pour limiter les requet et faire un cash mais le problem c'est que si on ferme la page 
                                               // on qu'on la reouvre ca ce reset et ca refait une requettes donc posibilité que l'utilisateur spam les requettes donc localstorage
