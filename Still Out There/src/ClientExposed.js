@@ -45,7 +45,7 @@ export class ClientExposed {
 
 async rechercher(mail) {
   try {
-    const liste = await chargerCatalogue()
+    const liste = await this.chargerCatalogue()
 
     const reponse = await fetch(API + '/check-email/' + encodeURIComponent(mail))   //encodeURIComponent transforme le texte en url
 
@@ -61,7 +61,7 @@ async rechercher(mail) {
     const fuites = []
 
     for (const nom of noms) {
-      const brute = trouverDansCatalogue(liste, nom)
+      const brute = this.trouverDansCatalogue(liste, nom)
       if (brute === null) continue
 
       fuites.push(new Fuite(brute))   //dans cette version plus besoin de mettre toutes les infos dans des variables vu que j'ai crée un object

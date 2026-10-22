@@ -13,7 +13,7 @@ export class VueFuites {
   }
 
   afficherErreur() {
-    this.zone.textContent = 'erreure'
+    this.zone.textContent = 'erreur'
   }
 
   afficherFuites(fuites) {                      //rajout du logo ici que je n'avais pas encore traité
@@ -23,7 +23,8 @@ export class VueFuites {
           <img src="${fuite.logo}" alt="${fuite.nom}" width="32" height="32">   
           ${fuite.nom}
         </summary>
-        <p>${fuite.secteur} · ${fuite.dateLisible()}</p>
+        <p>${fuite.secteur} · ${fuite.dateLisible}</p>
+        <p>${fuite.domain}</p>
         <p>${fuite.comptes} comptes touchés</p>
         <p>données touchées : ${fuite.types.join(', ')}</p>
         <p>${fuite.description}</p>
