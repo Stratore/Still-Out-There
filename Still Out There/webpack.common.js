@@ -10,7 +10,7 @@ export default {
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(import.meta.dirname, './src/index.html'),
-      title: 'projetp'
+      title: 'still out there'
     }),
   ],
   module: {
@@ -25,24 +25,7 @@ export default {
           }
         }
       },
-      {
-        test: /\.s[ac]ss$/i,
-        type: "css/auto",
-        use: [
-          {
-            loader: "sass-loader",
-            options: {
-              sassOptions: {
-                quietDeps: true
-              }
-            }
-          },
-        ],
-      },
-      {
-        test: /\.tpl\.html$/i,
-        type: 'asset/source'
-      },
+
       {
         test: /\.(png|jpe?g|gif|svg|webp)$/i,
         type: 'asset/resource',
