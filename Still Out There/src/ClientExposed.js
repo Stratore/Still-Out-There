@@ -58,6 +58,11 @@ async rechercher(mail) {
     }
 
     const donnees = await reponse.json()
+
+    if (!donnees.breaches) {
+      return { etat: 'vide' }
+    }
+    
     const noms = donnees.breaches[0]    // breaches[0] car il y a qu'une seule ligne 
     
 
