@@ -1,6 +1,6 @@
 export class VueFuites {
   constructor(zone) {
-    this.zone = zone        // je crée une zone dans laquel je vais travailler
+    this.zone = zone
   }
 
   //methode que j'utiliserais plus tard pour la gestion 

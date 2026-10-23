@@ -18,10 +18,10 @@ export class ClientExposed {
 
   }
   
-  // donc si on rentre pas dans les deux conditions c'est que c'est la premier fois donc on intéroge l'api
+  // donc si on rentre pas dans les deux conditions c'est que c'est la premier fois ou que le cache est trop vieux donc on intéroge l'api
     
   const reponse = await fetch(API + '/breaches')
-  if (!reponse.ok) throw new Error('CHARGER_CATALOGUE')
+  if (!reponse.ok) throw new Error('Impossible de charger le catalogue')
 
   
   const json = await reponse.json()
@@ -29,7 +29,7 @@ export class ClientExposed {
 
 
   const paquet = { date: Date.now(), donnees: donnees } //création de l'objet
-  localStorage.setItem(CLE, JSON.stringify(paquet))   //stringify pour mettre au format texte pour le fichier json
+  localStorage.setItem(CLE, JSON.stringify(paquet))   // stringify met l'objet au format texte car localStorage ne stocke que du texte
 
   return paquet.donnees
 }
@@ -47,7 +47,12 @@ async rechercher(mail) {
 
     const reponse = await fetch(API + '/check-email/' + encodeURIComponent(mail))   //encodeURIComponent transforme le texte en url
 
-    // gestion des erreures 
+
+    //une adresse qui n'a jamais fuité peut renvoyer un 404 ce n'est pas une erreur mais pas de fuite
+    if (reponse.status === 404) {     
+      return { etat: 'vide' }
+    }
+
     if (!reponse.ok) {
       return { etat: 'erreur' }
     }

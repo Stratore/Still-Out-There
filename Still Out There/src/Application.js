@@ -31,7 +31,7 @@ export class Application {
 
     if (resultat.etat === 'resultats') {
       this.fuites = resultat.fuites
-      this.afficherTriees()     // utilisation de mes methodes de vueFuites
+      this.afficherTriees()
     } else if (resultat.etat === 'vide') {
       this.vue.afficherVide()
     } else {
@@ -42,7 +42,7 @@ export class Application {
 afficherTriees() {              // je ne savais pas vraiment comment faire de sort en js j'ai trouver ce patron sur un stackoverflow que j'ai adapté a mon code
   if (this.menuTri.value === 'date') {
     this.fuites.sort(function (a, b) {
-      return b.date - a.date
+      return b.timestamp - a.timestamp    // a la base je l'avais fait avec les Date mais j'ai crée un timestamp ce qui fais que le NaN marche et le trie aussi du coup
     })
   } else {
     this.fuites.sort(function (a, b) {

@@ -1,18 +1,28 @@
-<main>
-  <header>
-    <h1>still out there</h1>
-    <p class="sous-titre">Vérifie si ton adresse mail apparaît dans une fuite de données.</p>
-  </header>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
 
-  <form id="formulaire">
-    <input type="email" id="mail" placeholder="adresse@exemple.com" required>
-    <button type="submit">Vérifier</button>
-  </form>
+<body>
+  <main>
+    <header>
+      <h1>still out there</h1>
+      <p class="sous-titre">Vérifie si ton adresse mail apparaît dans une fuite de données.</p>
+    </header>
 
-  <select id="tri">
-    <option value="date">Plus récentes d'abord</option>
-    <option value="comptes">Plus de comptes touchés d'abord</option>
-  </select>
+    <form id="formulaire">
+      <input type="email" id="mail" placeholder="adresse@exemple.com" required>
+      <button type="submit">Vérifier</button>
+    </form>
 
-  <div id="resultats"></div>
-</main>
+    <select id="tri">
+      <option value="date">Plus récentes d'abord</option>
+      <option value="comptes">Plus de comptes touchés d'abord</option>
+    </select>
+
+    <div id="resultats"></div>
+  </main>
+</body>
+</html>
