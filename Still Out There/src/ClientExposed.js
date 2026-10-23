@@ -6,12 +6,10 @@ const CLE = 'catalogue'
 
 export class ClientExposed {
  async chargerCatalogue() {
-  const stocke = localStorage.getItem(CLE)    // je voulais faire un setinterval de base pour limiter les requet et faire un cash mais le problem c'est que si on ferme la page 
-                                              // on qu'on la reouvre ca ce reset et ca refait une requettes donc posibilité que l'utilisateur spam les requettes donc localstorage
-                                              // j'urais aussi pu passer par sessionStorage, ma m'ourais peris que ca se n'étoie tous suel a la fermeture de l'onglet mais je préfère garder local car 
-                                              // comme ca si on ferme le naviguateur on n'as pas de demande suplémentaire ni si on ouvre un autre onglet 
-  if (stocke !== null) {                       // car localStorage.getItem(CLE)  renvoie null si rien n'as jamais été socké (comme le premier chargement)
-    const paquet = JSON.parse(stocke)         // plus d'info dans le readme
+  const stocke = localStorage.getItem(CLE)    // plus d'info dans le readme
+
+  if (stocke !== null) {  
+    const paquet = JSON.parse(stocke)         
     const age = Date.now() - paquet.date
 
     if (age < DUREE_CACHE) {
