@@ -8,6 +8,8 @@ données connues. On tape une adresse, le site affiche la liste des fuites avec
 le logo de l'entreprise, la date, le secteur, le nombre de comptes touchés, le
 type de données exposées et la description de l'incident.
 
+
+
 ## Installation
 
 Installer les dépendances :
@@ -27,6 +29,8 @@ Construire la version finale :
 
 Le résultat est mis dans le dossier dist.
 
+
+
 ## Les données
 
 J'utilise l'API XposedOrNot (https://xposedornot.com/api_doc). Elle est
@@ -38,16 +42,18 @@ J'appelle deux adresses :
 - /v1/check-email/{email} donne les noms des fuites qui contiennent l'adresse
 
 Le lien entre les deux se fait par le breachID. Les noms renvoyés par
-check-email correspondent aux identifiants du catalogue.
+check-email correspondent aux identifiants du catalogue
 
-Il y a des quotas : 50 appels par jour sur breaches, 100 sur check-email, et 2
-requêtes par seconde maximum.
+Il y a des quotas : sur /v1/breaches, 50 appels par heure et 100 par jour
+sur /v1/check-email, 25 par heure et 100 par jour ; et 2 requêtes par seconde maximum.
 
-## Choix de conception
+Quand l'adresse n'apparaît dans aucune fuite, check-email répond soit
+avec un code 404, soit avec {"Error":"Not found"} : le site affiche alors 
+"Aucune fuite trouvée"
+
+
 
 ### Découpage en classes
-
-## Architecture et choix de conception
 
 À la base, j'avais tout écrit dans un seul fichier 'index.js', avec des fonctions. Quand j'ai voulu
 ajouter un menu pour trier les résultats, j'ai naïvement créé une classe 'Trie'. En me penchant
@@ -68,7 +74,7 @@ J'ai donc découpé selon ce que le site manipule et ce qui peut évoluer.
 - **'ClientExposed'** regroupe tout ce qui parle à l'API, c'est-à-dire le cache du catalogue dans
   'localStorage', les deux requêtes 'fetch' dépendantes et le croisement par 'breachID'. Si
   l'API change, c'est le seul fichier à modifier.
-- **'VueFuites'** regroupe tout l'affichage (cartes, logos avec repli, messages). Si le design
+- **'VueFuites'** regroupe tout l'affichage (cartes, logos, messages). Si le design
   change, c'est le seul fichier à modifier.
 - **'Application'** coordonne le tout. Elle écoute le formulaire et le menu de tri, et garde
   en mémoire la liste des fuites du dernier résultat. Cet état permet de retrier sans
@@ -77,6 +83,8 @@ J'ai donc découpé selon ce que le site manipule et ce qui peut évoluer.
 
 Le tri est devenu une méthode de 'Application' ('afficherTriees') et non une classe. C'est une
 action qui s'appuie sur l'état de l'application, pas un objet à part entière.
+
+
 
 ### Enchaînement des deux requêtes
 
@@ -94,10 +102,12 @@ j'ai chargé au départ, et c'est comme ça que je récupère les détails à
 afficher. Sans la première requête, les noms renvoyés par la deuxième ne me
 servent à rien.
 
+
+
 ### Mise en cache du catalogue
 
-L'API est gratuite et sans clé, du coup elle limite le nombre d'appels : 50
-par jour sur /v1/breaches. Et comme le catalogue est chargé à chaque ouverture
+L'API est gratuite et sans clé, du coup elle limite le nombre d'appels : 50 par heure
+et 100 par jour sur /v1/breaches. Et comme le catalogue est chargé à chaque ouverture
 de la page, j'aurais utilisé le quota très vite, surtout en développement où le
 serveur recharge la page à chaque sauvegarde.
 
@@ -111,6 +121,8 @@ reste ouverte : dès qu'on recharge, le minuteur disparaît et on refait un
 appel. J'ai aussi hésité avec sessionStorage, qui se nettoie tout seul à la
 fermeture de l'onglet, mais j'ai gardé localStorage pour que le cache survive
 aussi quand on ferme le navigateur ou qu'on ouvre un autre onglet.
+
+
 
 ### Difficulté principale
 
@@ -136,9 +148,9 @@ quelques secondes une fois que j'ai vu les données.
 L'autre chose que je ne savais pas faire du tout, c'était la mise en cache :
 voir la section plus haut pour le détail.
 
-## Usage de l'IA
 
-J'ai utilisé Claude.
+
+## Usage de l'IA
 
 Je ne code pas encore très bien en JavaScript, donc je m'en suis servi pour
 apprendre, pas pour produire. Je ne lui ai jamais demandé d'écrire mon code à
@@ -150,6 +162,7 @@ Ce que je lui ai demandé :
   async et await, ou le fonctionnement de webpack
 - m'expliquer des messages d'erreur quand je ne comprenais pas d'où ils
   venaient
+- me donner des idées pour la gestion d'erreurs
 - m'aider à trouver et à comprendre de la documentation
 - me dire quelles sont les bonnes pratiques du développement web, pour que mon
   rendu ressemble à ce qui se fait vraiment (notamment le découpage du code)
@@ -157,8 +170,8 @@ Ce que je lui ai demandé :
 - générer le CSS : le sujet évalue la conception et le code, j'ai donc préféré
   concentrer mon temps dessus et déléguer la mise en forme pour avoir un rendu
   présentable
-- corriger l'orthographe et les tournures de ce README : si vous avez lu mes
-  commentaires dans le code, vous avez vu que ce n'est pas mon point fort
+- corriger l'orthographe et les tournure de ce README : si vous avez lu mes
+  commentaires dans le code, vous avez vu que ce n'est pas mon point fort ;/
 
 Quand j'étais bloqué, je ne demandais pas la solution pour mon projet. Je
 demandais un exemple sur un sujet qui n'a rien à voir avec mon travail. Je
@@ -171,29 +184,28 @@ pourquoi.
 
 - La configuration webpack : je suis parti d'une correction de TP fournie en
   cours et je l'ai adaptée à ce projet. Claude m'a expliqué à quoi servait
-  chaque bloc et ce que je devais retirer (le proxy et dotenv, dont je n'avais
+  chaque bloc et ce que je devais retirer (le proxy, dotenv et la sass, dont je n'avais
   pas besoin).
 - La mise en cache : je n'en avais jamais fait. Claude m'a montré le principe
   sur un exemple qui n'avait rien à voir, et m'a aidé à comprendre la
   différence entre localStorage et sessionStorage pour choisir.
 - Le fichier style.css.
-- Des fonctions JavaScript que je ne connaissais pas : toLocaDéveloppement webleDateString,
-  encodeURIComponent, JSON.stringify et JSON.parse. Claude m'a expliqué ce
+- Des fonctions JavaScript que je ne connaissais pas : 
+  encodeURIComponent, JSON.stringify et JSON.parse... Claude m'a expliqué ce
   qu'elles font et pourquoi elles étaient nécessaires ici.
 - Les bonnes pratiques de découpage du code : plutôt que de me donner une
-  architecture, Claude m'a posé des questions et montré des exemples sur
-  d'autres projets, ce qui m'a aidé à décider moi-même.
+  architecture(c'est qui n'était pas autorisé), Claude m'a montré des exemples sur
+  d'autres projets, ce qui m'a aidé à décider par moi-même.
 
 ## Contraintes du sujet
 
-- Programmation orientée objet : À COMPLÉTER
+- Programmation orientée objet : fait
 - Application empaquetée par webpack : fait
 - Compatible avec les 3 derniers navigateurs : fait
-- Toutes les dépendances passent par webpack, pas de CDN ni de balise script
-  dans le HTML, les images sont des dépendances : fait
+- Toutes les dépendances passent par webpack: fait
 - Deux requêtes fetch dépendantes l'une de l'autre : fait
 - Versionnement git avec des commits réguliers : fait
 
 ## Auteur
 
-Pierre Puget, BUT Informatique 2e année, IUT d'Arles.
+Pierre Puget, BUT Informatique 2e année, IUT d'Arles, pierre.puget@etu.univ-amu.fr
